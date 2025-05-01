@@ -1,0 +1,92 @@
+(defcfg
+    process-unmapped-keys yes
+    concurrent-tap-hold yes
+)
+
+(defsrc
+    tab  q    w    e    r    t    y    u    i    o    p    [
+    caps a    s    d    f    g    h    j    k    l    ;    '
+    lsft z    x    c    v    b    n    m    ,    .    /    rsft
+    lctl lmet lalt           spc       ralt      rctl
+)
+
+(defvar
+    tap-timeout   100
+    hold-timeout  200
+    tt $tap-timeout
+    ht $hold-timeout
+)
+
+
+(defalias
+    cw    (caps-word 2000)
+    cap   (tap-hold-release $tt $ht @cw lctl)
+    exte  (layer-while-held extend)
+    sym   (layer-while-held symbol)
+    gam   (layer-switch game)
+    can   (layer-switch canary)
+    ext   (tap-hold-release $tt $ht spc @exte)
+    atdl (tap-dance 400 (lalt @sym))
+    atdr (tap-dance 400 (@sym ralt))
+
+    ;; Symbols aliases
+    { S-[           
+    } S-]
+    : S-;
+    ! S-1
+    @ S-2
+    # S-3
+    $ S-4
+    % S-5
+    ^ S-6
+    & S-7
+    * S-8
+    ~ S-`
+    < S-,   
+    > S-.
+    | S-\
+    _ S--
+    + S-=
+    ? S-/
+
+    ;; Shift mod for Canary
+    ct (tap-hold-release $tt 1000 t lsft)
+    cn (tap-hold-release $tt 1000 n rsft)
+)
+
+(deflayer canary 
+    tab   w     l     y     p     k     z     x     o     u      ;     [
+    lctl  c     r     s     @ct   b     f     @cn   e     i      a     '
+    lsft  j     v     d     g     q     m     h     /     ,      .     rsft
+    lctl  lmet  @atdl             @ext              @atdr rctl
+)
+
+(deflayer symbol
+    _     '     @<    @>    @:    @@    @~    S-'   @{    @}    @%    _
+    _     @!    -     @+    =     `     @|    .     S-9   S-0   @?    _
+    _     @^    /     @*    @_    \     @&    @$    [     ]     @#    _
+    _     _     @sym              @ext              @sym  _
+)
+
+(deflayer extend
+    C-a   C-z   C-x   C-c   C-v   C-f   C-S-i home  up    end   _     _
+    _     1     2     3     4     5     pgup  left  down  rght  pgdn  _
+    _     6     7     8     9     0     _     _     _     _     _     _
+    _     _     _                 _                 _     @gam
+)
+
+(deflayer game
+    tab   q     w     e     r     t     y     u     i     o     p     [
+    lctl  a     s     d     f     g     h     j     k     l     ;     '
+    lsft  z     x     c     v     b     n     m     ,     .     /     rsft
+    lctl  lmet  lalt              spc               @sym  @can
+)
+
+(defchordsv2
+    (w e)    esc    30 all-released  ()
+    (s d)    tab    30 all-released  ()
+    (k l)    enter  30 all-released  ()
+    (i o)    bspc   30 all-released  ()
+    (j i)    del    30 all-released  ()
+    (x c)    @cw    30 all-released  ()
+)
