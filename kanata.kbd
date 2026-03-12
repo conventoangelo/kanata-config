@@ -89,4 +89,5 @@
     (i o)    bspc   30 all-released  ()
     (j i)    del    30 all-released  ()
     (x c)    @cw    30 all-released  ()
+    (q r)    caps   30 all-released  ()
 )
