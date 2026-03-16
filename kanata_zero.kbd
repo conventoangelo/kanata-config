@@ -1,0 +1,12 @@
+#|
+kanata config to deactivate all kanata commands (switch off basically)
+inspired from: https://rpnfan.github.io/keyboard-heaven/how-to/kanata-autostart-windows/
+|#
+
+(defcfg
+  process-unmapped-keys yes
+  concurrent-tap-hold yes
+)
+
+(defsrc)
+(deflayer base)
