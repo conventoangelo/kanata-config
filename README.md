@@ -1,2 +1,3 @@
 # kanata-config
-Kanata user config for standard ANSI keyboards
+
+Kanata user config I use in my laptop (standard ANSI)
