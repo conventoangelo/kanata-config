@@ -7,8 +7,8 @@
     tab  q    w    e    r    t    y    u    i    o    p    [
     caps a    s    d    f    g    h    j    k    l    ;    '
     lsft z    x    c    v    b    n    m    ,    .    /    rsft
-    lctl lmet lalt           spc       ralt      rctl
-)
+         lmet lalt           spc            ralt rctl
+)   
 
 (defvar
     tap-timeout   100
@@ -26,8 +26,8 @@
     gam   (layer-switch game)
     can   (layer-switch canary)
     ext   (tap-hold-release $tt $ht spc @exte)
-    atdl (tap-dance 400 (lalt @sym))
-    atdr (tap-dance 400 (@sym ralt))
+    atdl  (tap-dance 400 (lalt @sym))
+    atdr  (tap-dance 400 (@sym ralt))
 
     ;; Symbols aliases
     { S-[           
@@ -58,36 +58,37 @@
     tab   w     l     y     p     k     z     x     o     u      ;     [
     lctl  c     r     s     @ct   b     f     @cn   e     i      a     '
     lsft  j     v     d     g     q     m     h     /     ,      .     rsft
-    lctl  lmet  @atdl             @ext              @atdr rctl
+          lmet  @atdl             @ext              @atdr rctl
 )
 
 (deflayer symbol
     _     '     @<    @>    @:    @@    @~    S-'   @{    @}    @%    _
     _     @!    -     @+    =     `     @|    .     S-9   S-0   @?    _
     _     @^    /     @*    @_    \     @&    @$    [     ]     @#    _
-    _     _     @sym              @ext              @sym  _
+          _     @sym              @ext              @sym  _
 )
 
 (deflayer extend
     C-a   C-z   C-x   C-c   C-v   C-f   C-S-i home  up    end   _     _
     _     1     2     3     4     5     pgup  left  down  rght  pgdn  _
     _     6     7     8     9     0     _     _     _     _     _     _
-    _     _     _                 _                 _     @gam
+          _     _                 _                 _     @gam
 )
 
 (deflayer game
     tab   q     w     e     r     t     y     u     i     o     p     [
     lctl  a     s     d     f     g     h     j     k     l     ;     '
     lsft  z     x     c     v     b     n     m     ,     .     /     rsft
-    lctl  lmet  lalt              spc               @sym  @can
+          lmet  lalt              spc               @sym  @can
 )
 
-(defchordsv2
-    (w e)    esc    30 all-released  ()
-    (s d)    tab    30 all-released  ()
-    (k l)    enter  30 all-released  ()
-    (i o)    bspc   30 all-released  ()
-    (j i)    del    30 all-released  ()
-    (x c)    @cw    30 all-released  ()
-    (q r)    caps   30 all-released  ()
+(defchordsv2 
+    (w e)    esc    55 all-released  ()
+    (s d)    tab    55 all-released  ()
+    (i o)    bspc   55 all-released  ()
+    (j i)    del    55 all-released  ()
+    (q r)    caps   55 all-released  ()
+    ;; Added 5ms delay for Corne Keyboard
+    (x c)    @cw    50 all-released  ()
+    (k l)    enter  50 all-released  ()
 )
