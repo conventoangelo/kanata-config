@@ -1,3 +1,4 @@
 *.exe
 Kanata GUI.lnk
 kanata_log.txt
+.vscode
