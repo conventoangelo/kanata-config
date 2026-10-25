@@ -1,115 +1,167 @@
+;; ============================================================================
+;; GLOBAL CONFIGURATION
+;; ============================================================================
 (defcfg
-    process-unmapped-keys yes
-    concurrent-tap-hold yes
+  process-unmapped-keys yes     ;; Intercept and process keys not explicitly in defsrc
+  concurrent-tap-hold   yes     ;; Required for defchordsv2 and responsive tap-hold
 )
 
-
+;; ============================================================================
+;; PHYSICAL KEY MATRIX (defsrc)
+;; Physical 42-key layout (3x6 split / Corne style + 6 thumb keys)
+;; The base alpha layout here uses Canary.
+;; ============================================================================
 (defsrc
-    tab   w     l     y     p     k              z     x     o     u     ;     bspc
-    caps  c     r     s     t     b              f     n     e     i     a     '
-    lmet  j     v     d     g     q              m     h     /     ,     .     rmet
-                      lctl  lalt  spc            rsft  ralt rctl
+  tab   w     l     y     p     k             z     x     o     u     ;     lsft
+  caps  c     r     s     t     b             f     n     e     i     a     '
+  lmet  j     v     d     g     q             m     h     /     ,     .     rmet
+                    lctl  lalt  spc           rsft  ralt  rctl
 )
 
+;; ============================================================================
+;; TIMING VARIABLES
+;; ============================================================================
 (defvar
-    tap-timeout   100
-    hold-timeout  200
-    os-timeout    1500
-    tt $tap-timeout
-    ht $hold-timeout
-    ost $os-timeout
+  tap-timeout   100             ;; Max tap duration in ms
+  hold-timeout  200             ;; Hold threshold in ms
+  os-timeout    1500            ;; One-shot modifier expiration window
+  chord-timeout 35              ;; Overlap detection window for defchordsv2
+
+  tt  $tap-timeout
+  ht  $hold-timeout
+  ost $os-timeout
+  ct  $chord-timeout
 )
 
-
+;; ============================================================================
+;; ALIASES
+;; ============================================================================
 (defalias
+  ;; --- One-Shot Modifiers ---
+  oss   (one-shot $ost lsft)
+  osc   (one-shot $ost lctl)
+  osa   (one-shot $ost lalt)
+  osg   (one-shot $ost lmet)
 
-    oss   (one-shot $ost lsft)
-    osc   (one-shot $ost lctl)
-    osa   (one-shot $ost lalt)
-    osg   (one-shot $ost lmet)
-    hyp   (multi lctl lsft lalt lmet)
-    cw    (caps-word $ost)
-    chyp  (tap-hold-release $tt $ht @cw @hyp)
-    ssft  (tap-hold-release $tt $ht spc lsft)
+  ;; --- Multi-Key Combos & Shortcuts ---
+  hyp   (multi lctl lsft lalt lmet)   ;; Hyper key (all 4 modifiers)
+  prts  M-S-s                         ;; Windows Snip / Screen capture
 
-    ext   (layer-while-held extend)
-    num   (layer-while-held number)
-    sym   (layer-while-held symbol)
-    gam   (layer-switch game)
-    gam2   (layer-switch game2)
-    can   (layer-switch canary)
-    cat   (layer-while-held canary)
+  ;; --- Tap-Hold Actions ---
+  cw    (caps-word $ost)
+  chyp  (tap-hold-release $tt $ht @cw @hyp)
+  ssft  (tap-hold-release $tt $ht spc lsft)
+  g1    (tap-hold-release $tt $ht 1 tab)
+  g2    (tap-hold-release $tt $ht 2 lctl)
 
-    ;; Symbols aliases
-    { S-[           
-    } S-]
-    : S-;
-    ! S-1
-    @ S-2
-    # S-3
-    $ S-4
-    % S-5
-    ^ S-6
-    & S-7
-    * S-8
-    ~ S-`
-    < S-,   
-    > S-.
-    | S-\
-    _ S--
-    + S-=
-    ? S-/
-    crop C-S-M-t
-    prts M-S-s
+  ;; --- Layer Activation ---
+  ext   (layer-while-held extend)
+  num   (layer-while-held number)
+  sym   (layer-while-held symbol)
+  gam   (layer-switch game)
+  can   (layer-switch canary)
+
+  ;; --- Symbol Aliases (Shifted ASCII Characters) ---
+  {     S-[
+  }     S-]
+  :     S-;
+  !     S-1
+  @     S-2
+  #     S-3
+  $     S-4
+  %     S-5
+  ^     S-6
+  &     S-7
+  *     S-8
+  ~     S-`
+  <     S-,
+  >     S-.
+  |     S-\
+  _     S--
+  +     S-=
+  ?     S-/
 )
 
+;; ============================================================================
+;; BASE LAYER: CANARY
+;; ============================================================================
 (deflayer canary
-    tab   w     l     y     p     k              z     x     o     u     ;     bspc
-    @chyp c     r     s     t     b              f     n     e     i     a     '
-    lmet  j     v     d     g     q              m     h     /     ,     .     @ext
-                      @osc  @ext  spc            @ssft @num  rctl
+  tab    w      l      y      p      k             z      x      o      u      ;      bspc
+  @chyp  c      r      s      t      b             f      n      e      i      a      '
+  lmet   j      v      d      g      q             m      h      /      ,      .      @ext
+                       @osc   @ext   @ssft         @ssft  @num   rctl
 )
 
+;; ============================================================================
+;; LAYER: NUMBER & FUNCTION KEYS
+;; Left side: Home-row One-Shot mods and F-keys
+;; Right side: 10-key number pad
+;; ============================================================================
 (deflayer number
-    f1    f2    f3    f4    f5    f6             0     7     8     9     -     @+
-    @hyp  @osc  @osa  @osg  @oss  XX             0     4     5     6     /     @*
-    f7    f8    f9    f10   f11   f12            0     1     2     3     🔢．  enter
-                      _     @sym  _              _     XX    .
+  f1     f2     f3     f4     f5     f6            0      7      8      9      -      @+
+  @hyp   @osc   @osa   @osg   @oss   XX            0      4      5      6      /      @*
+  f7     f8     f9     f10    f11    f12           0      1      2      3      .      enter
+                       _      @sym   _             _      XX     .
 )
 
+;; ============================================================================
+;; LAYER: EXTEND (NAVIGATION & EDITING)
+;; Left side: Home-row One-Shot mods and clipboard shortcuts
+;; Right side: Inverted-T navigation and document navigation
+;; ============================================================================
 (deflayer extend
-    XX    XX    XX    @prts @crop lrld           pgup  home  up    end   XX    @gam
-    @hyp  @osc  @osa  @osg  @oss  tab            pgdn  left  down  rght  XX    XX
-    XX    C-z   C-x   C-c   C-v   C-a            XX    XX    XX    XX    XX    XX
-                      _     XX    _              _     @sym  XX
+  XX     XX     XX     @prts  XX     lrld          pgup   home   up     end    XX     @gam
+  @hyp   @osc   @osa   @osg   @oss   tab           pgdn   left   down   rght   XX     XX
+  XX     C-z    C-x    C-c    C-v    C-a           XX     XX     XX     XX     XX     XX
+                       _      XX     _             _      @sym   XX
 )
 
+;; ============================================================================
+;; LAYER: SYMBOLS
+;; Left side: Common programming delimiters and operators (no mods on home row)
+;; Right side: Brackets, braces, parentheses, and special characters
+;; ============================================================================
 (deflayer symbol
-    XX     '     @<    @>    @:    @@            @~    S-'   @{    @}    @%    XX
-    @hyp   @!    -     @+    =     `             @|    .     S-9   S-0   @?    XX 
-    XX     @^    /     @*    @_    \             @&    @$    [     ]     @#    XX
-                       XX    XX    _             _     XX    XX
+  XX     '      @<     @>     @:     @@            @~     S-'    @{     @}     @%     XX
+  @hyp   @!     -      @+     =      `             @|     .      S-9    S-0    @?     XX
+  XX     @^     /      @*     @_     \             @&     @$     [      ]      @#     XX
+                       XX     XX     _             _      XX     XX
 )
 
+;; ============================================================================
+;; LAYER: GAME (STANDARD QWERTY PASS-THROUGH)
+;; Standard raw key mappings for game controls (WASD) with all combos disabled
+;; ============================================================================
 (deflayer game
-    tab   q     w     e     r     t              y     u     i     o     p     bspc
-    lctl  a     s     d     f     g              h     j     k     l     ;     '
-    lsft  z     x     c     v     b              n     m     ,     .     /     rsft
-                      lalt  lalt  spc            spc    @cat  @can
+  @g1    q      w      e      r      t             y      u      i      o      p      bspc
+  @g2    a      s      d      f      g             h      j      k      l      ;      enter
+  lsft   z      x      c      v      b             n      m      ,      .      /      rsft
+                       lalt   @ext   spc           spc    @num   @can
 )
 
-(deflayer game2
-    tab   q     w     e     r     t              y     u     i     o     p     [
-    lctl  a     s     d     f     g              h     j     k     l     ;     '
-    lsft  z     x     c     v     b              n     m     ,     .     /     rsft
-                      lalt  lalt  spc            spc    @cat  @can
-)
+;; ============================================================================
+;; CHORDS / COMBOS (defchordsv2)
+;;
+;; Syntax:
+;;   (physical-keys) output-action timeout-ms release-behaviour (disabled-layers)
+;;
+;; Rules applied:
+;; 1. (r s) outputs 'tab'. On 'number' and 'extend', r & s are one-shot Alt & GUI.
+;;    To prevent modifier conflicts and allow Alt+GUI shortcuts, (r s) is disabled
+;;    on (number extend game). It remains active on 'canary' and 'symbol'.
+;; 2. (v d) outputs '@cw'. Caps-Word is disabled on (number extend symbol game),
+;;    running strictly on 'canary'.
+;; 3. (l y), (e i), (o u), (n o) remain active across canary, number, extend, and
+;;    symbol layers, but are disabled on 'game' so WASD/movement is unaffected.
+;; ============================================================================
+(defchordsv2 
+  ;; --- Left Hand Chords ---
+  (l y)  esc    $ct  all-released  (game)
+  (r s)  tab    $ct  all-released  (number extend game)
+  (v d)  @cw    $ct  all-released  (number extend symbol game)
 
-(defchordsv2
-    (l y)    esc    55 all-released  ()
-    (r s)    tab    55 all-released  ()
-    (e i)    enter  55 all-released  ()
-    (o u)    bspc   55 all-released  ()
-    (n o)    del    55 all-released  ()
-    (v d)    @cw    55 all-released  ()
+  ;; --- Right Hand Chords ---
+  (o u)  bspc   $ct  all-released  (game)
+  (e i)  enter  $ct  all-released  (game)
+  (n o)  del    $ct  all-released  (game)
 )
