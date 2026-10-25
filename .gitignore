@@ -1,5 +1,5 @@
 *.exe
-Kanata GUI.lnk
+*.lnk
 kanata_log.txt
 .vscode
 Interception/
